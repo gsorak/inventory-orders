@@ -1,0 +1,43 @@
+# Fixed project name: keeps the existing container and postgres_data volume, and avoids clashing with other
+# projects whose compose.yaml also lives in a directory called backend/.
+name: inventory-orders
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: inventory
+      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME must be set in .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+    ports:
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d inventory"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Throwaway database for the Playwright E2E tests (see start-e2e.sh). Only started with `--profile e2e`, never by
+  # `docker compose up -d postgres`. Data lives in tmpfs, so it never reaches the development volume or survives a
+  # container restart. Fixed credentials are fine: it listens on loopback only and holds nothing of value.
+  postgres-e2e:
+    profiles: ["e2e"]
+    image: postgres:17
+    environment:
+      POSTGRES_DB: inventory_e2e
+      POSTGRES_USER: e2e
+      POSTGRES_PASSWORD: e2e
+    ports:
+      - "127.0.0.1:5434:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U e2e -d inventory_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  postgres_data:

@@ -1,0 +1,14 @@
+# Allow list: the image build needs only the Maven Wrapper, pom.xml and src/main/. Everything else (.env with
+# credentials, backups/, scripts/, target/, src/test/, IDE settings) stays out of the build context.
+*
+!.mvn/
+!mvnw
+!pom.xml
+!src/main/
+
+# Never send these, even if they appear inside an allowed folder.
+**/.env
+**/.env.*
+**/*.sql.gz
+**/*.dump
+.mvn/wrapper/maven-wrapper.jar

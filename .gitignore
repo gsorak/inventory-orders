@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# VS Code local settings
+.vscode/*
+!.vscode/extensions.json
+
+# Java / Maven
+**/target/
+*.class
+*.log
+
+# Frontend / Node.js
+**/node_modules/
+**/dist/
+**/coverage/
+
+# AWS CDK
+**/cdk.out/
+cdk.context.json
+
+# Deployment scripts: local config, logs and frontend build output
+deployment/config.env
+deployment/logs/
+deployment/build/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
